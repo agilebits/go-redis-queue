@@ -1,10 +1,10 @@
-package queue_test
+package redisqueue_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/AgileBits/go-redis-queue/queue"
+	"github.com/AgileBits/go-redis-queue/redisqueue"
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -16,7 +16,7 @@ func TestQueueTasks(t *testing.T) {
 	}
 	defer c.Close()
 
-	q := queue.New("basic_queue", c)
+	q := redisqueue.New("basic_queue", c)
 
 	err = q.FlushQueue()
 	if err != nil {
@@ -62,7 +62,7 @@ func TestQueueTaskScheduling(t *testing.T) {
 	}
 	defer c.Close()
 
-	q := queue.New("scheduled_queue", c)
+	q := redisqueue.New("scheduled_queue", c)
 
 	err = q.FlushQueue()
 	if err != nil {
@@ -121,7 +121,7 @@ func TestPopOrder(t *testing.T) {
 	}
 	defer c.Close()
 
-	q := queue.New("scheduled_queue", c)
+	q := redisqueue.New("scheduled_queue", c)
 
 	err = q.FlushQueue()
 	if err != nil {
@@ -195,7 +195,7 @@ func TestPopMultiOrder(t *testing.T) {
 	}
 	defer c.Close()
 
-	q := queue.New("scheduled_queue", c)
+	q := redisqueue.New("scheduled_queue", c)
 
 	err = q.FlushQueue()
 	if err != nil {

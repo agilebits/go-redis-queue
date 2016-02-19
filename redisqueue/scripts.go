@@ -1,4 +1,4 @@
-package queue
+package redisqueue
 
 import "github.com/garyburd/redigo/redis"
 

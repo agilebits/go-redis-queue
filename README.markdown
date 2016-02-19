@@ -21,7 +21,7 @@ This is a redis-based queue for usage in Go. I evaluated a lot of other options 
 Adding jobs to a queue.
 
 ```
-import "github.com/AgileBits/go-redis-queue/queue"
+import "github.com/AgileBits/go-redis-queue/redisqueue"
 ```
 
 ```
@@ -29,7 +29,7 @@ c, err := redis.Dial("tcp", "127.0.0.1:6379")
 if err != nil { ... }
 defer c.Close()
 
-q := queue.New("some_queue_name", c)
+q := redisqueue.New("some_queue_name", c)
 
 wasAdded, err := q.Push("basic item")
 if err != nil { ... }
@@ -47,7 +47,7 @@ c, err := redis.Dial("tcp", "127.0.0.1:6379")
 if err != nil { ... }
 defer c.Close()
 
-q := queue.New("some_queue_name", c)
+q := redisqueue.New("some_queue_name", c)
 
 for !timeToQuit {
   job, err = q.Pop()
@@ -66,7 +66,7 @@ c, err := redis.Dial("tcp", "127.0.0.1:6379")
 if err != nil { ... }
 defer c.Close()
 
-q := queue.New("some_queue_name", c)
+q := redisqueue.New("some_queue_name", c)
 
 for !timeToQuit {
   jobs, err := q.PopJobs(100) // argument is "limit"
@@ -84,4 +84,5 @@ for !timeToQuit {
 ## Requirements
 
 - Redis 2.6.0 or greater
+- github.com/garyburd/redigo/redis
 - Go
