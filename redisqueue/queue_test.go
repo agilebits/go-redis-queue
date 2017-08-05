@@ -4,126 +4,83 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AgileBits/go-redis-queue/redisqueue"
-	"github.com/garyburd/redigo/redis"
+	"github.com/Overflow3D/go-redis-queue/redisqueue"
+	"github.com/go-redis/redis"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestQueueTasks(t *testing.T) {
-	c, err := redis.Dial("tcp", "127.0.0.1:6379")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	defer c.Close()
+	conn := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	defer conn.Close()
+	_, err := conn.Ping().Result()
+	assert.NoError(t, err)
 
-	q := redisqueue.New("basic_queue", c)
+	q := redisqueue.New("testQueue", conn)
 
 	err = q.FlushQueue()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
 
-	b, err := q.Push("basic item 1")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	added, err := q.Push("basic item 1")
+	assert.NoError(t, err)
+	assert.True(t, added, "expects item to be added")
 
-	if b != true {
-		t.Error("expected item to be added to queue but was not")
-	}
-
-	b, err = q.Push("basic item 1")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if b != false {
-		t.Error("expected item not to be added to queue but it was")
-	}
+	added, err = q.Push("basic item 1")
+	assert.NoError(t, err)
+	assert.False(t, added, "expects item not to be added")
 
 	pending, err := q.Pending()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	if pending != 1 {
-		t.Error("Expected 1 job pending in queue, was", pending)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), pending, "expects 1 job pending in queue")
 }
 
 func TestQueueTaskScheduling(t *testing.T) {
-	c, err := redis.Dial("tcp", "127.0.0.1:6379")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	defer c.Close()
+	conn := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
 
-	q := redisqueue.New("scheduled_queue", c)
+	q := redisqueue.New("scheduled_queue", conn)
+	q.FlushQueue()
 
-	err = q.FlushQueue()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	defer conn.Close()
 
-	b, err := q.Schedule("scheduled item 1", time.Now().Add(90*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if b != true {
-		t.Error("expected item to be added to queue but was not")
-	}
+	added, err := q.Schedule("scheduled", time.Now().Add(90*time.Millisecond))
+	assert.NoError(t, err)
+	assert.True(t, added)
 
 	pending, err := q.Pending()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	if pending != 1 {
-		t.Error("Expected 1 job pending in queue, was", pending)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), pending, "expects 1 job pending in queue")
 
 	job, err := q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if job != "" {
-		t.Error("Didn't expect to get a job off the queue but I got one.")
-	}
+	assert.NoError(t, err)
+	assert.Empty(t, job, "didn't expect to get a job")
 
 	// Wait for the job to become ready.
 	time.Sleep(100 * time.Millisecond)
 
 	job, err = q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "scheduled", job, "expected to get a job off the queue")
 
-	if job != "scheduled item 1" {
-		t.Error("Expected to get a job off the queue, but I got this:", job)
-	}
 }
 
 func TestPopOrder(t *testing.T) {
-	c, err := redis.Dial("tcp", "127.0.0.1:6379")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	c := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
 	defer c.Close()
 
 	q := redisqueue.New("scheduled_queue", c)
 
-	err = q.FlushQueue()
+	err := q.FlushQueue()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -188,16 +145,16 @@ func TestPopOrder(t *testing.T) {
 }
 
 func TestPopMultiOrder(t *testing.T) {
-	c, err := redis.Dial("tcp", "127.0.0.1:6379")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	c := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
 	defer c.Close()
 
 	q := redisqueue.New("scheduled_queue", c)
 
-	err = q.FlushQueue()
+	err := q.FlushQueue()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
