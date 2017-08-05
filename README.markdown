@@ -25,11 +25,17 @@ import "github.com/AgileBits/go-redis-queue/redisqueue"
 ```
 
 ```
-c, err := redis.Dial("tcp", "127.0.0.1:6379")
-if err != nil { ... }
-defer c.Close()
+conn := redis.NewClient(&redis.Options{
+    Addr:     "localhost:6379",
+    Password: "", // no password set
+    DB:       0,  // use default DB
+})
 
-q := redisqueue.New("some_queue_name", c)
+_, err := client.Ping().Result()
+if err != nil { ... }
+defer conn.Close()
+
+q := redisqueue.New("some_queue_name", conn)
 
 wasAdded, err := q.Push("basic item")
 if err != nil { ... }
@@ -43,11 +49,17 @@ if err != nil { ... }
 
 A simple worker processing jobs from a queue:
 ```
-c, err := redis.Dial("tcp", "127.0.0.1:6379")
-if err != nil { ... }
-defer c.Close()
+conn := redis.NewClient(&redis.Options{
+    Addr:     "localhost:6379",
+    Password: "", // no password set
+    DB:       0,  // use default DB
+})
 
-q := redisqueue.New("some_queue_name", c)
+_, err := client.Ping().Result()
+if err != nil { ... }
+defer conn.Close()
+
+q := redisqueue.New("some_queue_name", conn)
 
 for !timeToQuit {
   job, err = q.Pop()
@@ -62,11 +74,17 @@ for !timeToQuit {
 
 A batch worker processing jobs from a queue:
 ```
-c, err := redis.Dial("tcp", "127.0.0.1:6379")
-if err != nil { ... }
-defer c.Close()
+conn := redis.NewClient(&redis.Options{
+    Addr:     "localhost:6379",
+    Password: "", // no password set
+    DB:       0,  // use default DB
+})
 
-q := redisqueue.New("some_queue_name", c)
+_, err := client.Ping().Result()
+if err != nil { ... }
+defer conn.Close()
+
+q := redisqueue.New("some_queue_name", conn)
 
 for !timeToQuit {
   jobs, err := q.PopJobs(100) // argument is "limit"
@@ -84,5 +102,5 @@ for !timeToQuit {
 ## Requirements
 
 - Redis 2.6.0 or greater
-- github.com/garyburd/redigo/redis
+- github.com/go-redis/redis
 - Go
