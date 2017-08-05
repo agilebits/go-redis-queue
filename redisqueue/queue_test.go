@@ -71,142 +71,72 @@ func TestQueueTaskScheduling(t *testing.T) {
 }
 
 func TestPopOrder(t *testing.T) {
-	c := redis.NewClient(&redis.Options{
+	conn := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
-	defer c.Close()
+	defer conn.Close()
 
-	q := redisqueue.New("scheduled_queue", c)
+	q := redisqueue.New("scheduled_queue", conn)
+	q.FlushQueue()
 
-	err := q.FlushQueue()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	_, err = q.Schedule("oldest", time.Now().Add(-300*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	_, err := q.Schedule("oldest", time.Now().Add(-300*time.Millisecond))
+	assert.NoError(t, err)
 
 	_, err = q.Schedule("newer", time.Now().Add(-100*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
 
 	_, err = q.Schedule("older", time.Now().Add(-200*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
 
 	job, err := q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if job != "oldest" {
-		t.Error("Expected to the oldest job off the queue, but I got this:", job)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "oldest", job, "expects to the oldest job off the queue")
 
 	job, err = q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if job != "older" {
-		t.Error("Expected to the older job off the queue, but I got this:", job)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "older", job, "expects to the older job off the queue")
 
 	job, err = q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if job != "newer" {
-		t.Error("Expected to the newer job off the queue, but I got this:", job)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "newer", job, "expects to the newer job off the queue")
 
 	job, err = q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	if job != "" {
-		t.Error("Expected no jobs")
-	}
+	assert.NoError(t, err)
+	assert.Empty(t, job, "expects no job")
 }
 
 func TestPopMultiOrder(t *testing.T) {
-	c := redis.NewClient(&redis.Options{
+	conn := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
-	defer c.Close()
+	defer conn.Close()
 
-	q := redisqueue.New("scheduled_queue", c)
+	q := redisqueue.New("scheduled_queue", conn)
 
-	err := q.FlushQueue()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	q.FlushQueue()
 
-	_, err = q.Schedule("oldest", time.Now().Add(-300*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	_, err := q.Schedule("oldest", time.Now().Add(-300*time.Millisecond))
+	assert.NoError(t, err)
 
 	_, err = q.Schedule("newer", time.Now().Add(-100*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
 
 	_, err = q.Schedule("older", time.Now().Add(-200*time.Millisecond))
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
 
 	jobs, err := q.PopJobs(3)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	assert.NoError(t, err)
+	assert.Len(t, jobs, 3, "expects 3 jobs")
 
-	if len(jobs) != 3 {
-		t.Error("Expected 3 jobs. got: ", jobs)
-		t.FailNow()
-	}
-
-	if jobs[0] != "oldest" {
-		t.Error("Expected to the oldest job off the queue, but I got this:", jobs)
-	}
-
-	if jobs[1] != "older" {
-		t.Error("Expected to the older job off the queue, but I got this:", jobs)
-	}
-
-	if jobs[2] != "newer" {
-		t.Error("Expected to the newer job off the queue, but I got this:", jobs)
-	}
+	assert.Equal(t, "oldest", jobs[0], "expected to the oldest job")
+	assert.Equal(t, "older", jobs[1], "expected to the older job")
+	assert.Equal(t, "newer", jobs[2], "expected to the newer job")
 
 	job, err := q.Pop()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	if job != "" {
-		t.Error("Expected no jobs")
-	}
+	assert.NoError(t, err)
+	assert.Empty(t, job, "expects no job")
 }
