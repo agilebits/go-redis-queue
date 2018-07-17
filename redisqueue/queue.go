@@ -30,9 +30,7 @@ func (q *Queue) Push(job string) (bool, error) {
 // Schedule schedule a job at some point in the future, or some point in the past. Scheduling a job far in the past is the same as giving it a high priority, as jobs are popped in order of due date.
 func (q *Queue) Schedule(job string, when time.Time) (bool, error) {
 	score := when.UnixNano()
-	added, err := redis.Bool(q.c.Do("ZADD", q.Name, score, job))
-	// _, err := addTaskScript.Do(q.c, job)
-	return added, err
+	return redis.Bool(q.c.Do("ZADD", q.Name, score, job))
 
 }
 
