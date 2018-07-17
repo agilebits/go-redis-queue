@@ -26,12 +26,8 @@
 
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/AgileBits/go-redis-queue"
-
-[[constraint]]
-  name = "github.com/garyburd/redigo"
-  version = "1.6.0"
+  name = "github.com/gomodule/redigo"
+  version = "2.0.0"
 
 [prune]
   go-tests = true

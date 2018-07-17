@@ -2,23 +2,17 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/AgileBits/go-redis-queue"
-  packages = ["redisqueue"]
-  revision = "9f5b2cbf79fef25686eb2555fd18b8ff50e5bac2"
-
-[[projects]]
-  name = "github.com/garyburd/redigo"
+  name = "github.com/gomodule/redigo"
   packages = [
     "internal",
     "redis"
   ]
-  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
-  version = "v1.6.0"
+  revision = "9c11da706d9b7902c6da69c592f75637793fe121"
+  version = "v2.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4e465eecbfdce3354b385cb75ad9697f7555b06685a5ab1a3e66ab911de87168"
+  inputs-digest = "3f2ffe23e739dd972495d04286452c2dca6a3f97db12e33a8abfc528dd47963a"
   solver-name = "gps-cdcl"
   solver-version = 1
