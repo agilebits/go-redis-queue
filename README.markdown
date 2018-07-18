@@ -6,25 +6,25 @@ This is a redis-based queue for usage in Go. I evaluated a lot of other options 
 
 ## Features
 
-1. Ability to add arbitrary tasks to a queue in redis
-1. Automatic dedupping of tasks. Multiple pushes of the exact same payload does not create any additional work.
-1. Ability to schedule tasks in the future.
-1. Atomic Push and Pop from queue. Two workers cannot get the same job.
-1. Sorted FIFO queue.
-1. Can act like a priority queue by scheduling a job with a really old timestamp
-1. Well tested
-1. Small, concise codebase
-1. Simple API
+1.  Ability to add arbitrary tasks to a queue in redis
+1.  Automatic dedupping of tasks. Multiple pushes of the exact same payload does not create any additional work.
+1.  Ability to schedule tasks in the future.
+1.  Atomic Push and Pop from queue. Two workers cannot get the same job.
+1.  Sorted FIFO queue.
+1.  Can act like a priority queue by scheduling a job with a really old timestamp
+1.  Well tested
+1.  Small, concise codebase
+1.  Simple API
 
 ## Usage
 
 Adding jobs to a queue.
 
-```
+```go
 import "github.com/AgileBits/go-redis-queue/redisqueue"
 ```
 
-```
+```go
 c, err := redis.Dial("tcp", "127.0.0.1:6379")
 if err != nil { ... }
 defer c.Close()
@@ -42,7 +42,8 @@ if err != nil { ... }
 ```
 
 A simple worker processing jobs from a queue:
-```
+
+```go
 c, err := redis.Dial("tcp", "127.0.0.1:6379")
 if err != nil { ... }
 defer c.Close()
@@ -61,7 +62,8 @@ for !timeToQuit {
 ```
 
 A batch worker processing jobs from a queue:
-```
+
+```go
 c, err := redis.Dial("tcp", "127.0.0.1:6379")
 if err != nil { ... }
 defer c.Close()
