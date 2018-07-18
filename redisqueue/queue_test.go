@@ -212,3 +212,53 @@ func TestPopMultiOrder(t *testing.T) {
 		t.Error("Expected no jobs")
 	}
 }
+
+func TestRemove(t *testing.T) {
+	c, q := initQueue(t, "scheduled_queue")
+	defer c.Close()
+
+	if _, err := q.Schedule("oldest", time.Now().Add(-300*time.Millisecond)); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if _, err := q.Schedule("newer", time.Now().Add(-100*time.Millisecond)); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if _, err := q.Schedule("older", time.Now().Add(-200*time.Millisecond)); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	q.Remove("older")
+
+	jobs, err := q.PopJobs(3)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if len(jobs) != 2 {
+		t.Error("Expected 2 jobs. got: ", jobs)
+		t.FailNow()
+	}
+
+	if jobs[0] != "oldest" {
+		t.Error("Expected to the oldest job off the queue, but I got this:", jobs)
+	}
+
+	if jobs[1] != "newer" {
+		t.Error("Expected to the newer job off the queue, but I got this:", jobs)
+	}
+
+	job, err := q.Pop()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if job != "" {
+		t.Error("Expected no jobs")
+	}
+}

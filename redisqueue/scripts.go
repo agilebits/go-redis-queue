@@ -2,10 +2,7 @@ package redisqueue
 
 import "github.com/gomodule/redigo/redis"
 
-var popJobsScript *redis.Script
-
-func init() {
-	popJobsScript = redis.NewScript(3, `
+var popJobsScript = redis.NewScript(3, `
 		local name = KEYS[1]
 		local timestamp = KEYS[2]
 		local limit = KEYS[3]
@@ -13,6 +10,5 @@ func init() {
 		if table.getn(results) > 0 then
 			redis.call('zrem', name, unpack(results))
 		end
-    return results
+		return results
   `)
-}

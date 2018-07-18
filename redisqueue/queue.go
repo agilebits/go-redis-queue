@@ -27,6 +27,11 @@ func (q *Queue) Push(job string) (bool, error) {
 	return q.Schedule(job, time.Now())
 }
 
+// Remove removes a fob from the queue
+func (q *Queue) Remove(job string) (bool, error) {
+	return redis.Bool(q.c.Do("ZREM", q.Name, job))
+}
+
 // Schedule schedule a job at some point in the future, or some point in the past. Scheduling a job far in the past is the same as giving it a high priority, as jobs are popped in order of due date.
 func (q *Queue) Schedule(job string, when time.Time) (bool, error) {
 	score := when.UnixNano()
