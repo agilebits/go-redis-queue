@@ -2,17 +2,67 @@
 
 
 [[projects]]
+  digest = "1:15042ad3498153684d09f393bbaec6b216c8eec6d61f63dff711de7d64ed8861"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  pruneopts = "UT"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
+
+[[projects]]
+  digest = "1:38ec74012390146c45af1f92d46e5382b50531247929ff3a685d2b2be65155ac"
   name = "github.com/gomodule/redigo"
   packages = [
     "internal",
-    "redis"
+    "redis",
   ]
+  pruneopts = "UT"
   revision = "9c11da706d9b7902c6da69c592f75637793fe121"
   version = "v2.0.0"
+
+[[projects]]
+  digest = "1:8f9017baaaca37682b06d9f48a292bbeb0ea40c7807343628fd81b595f5a1f93"
+  name = "github.com/vmihailenco/msgpack"
+  packages = [
+    ".",
+    "codes",
+  ]
+  pruneopts = "UT"
+  revision = "b5e691b1eb52a28c05e67ab9df303626c095c23b"
+  version = "v3.3.3"
+
+[[projects]]
+  branch = "master"
+  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  pruneopts = "UT"
+  revision = "f4c29de78a2a91c00474a2e689954305c350adf9"
+
+[[projects]]
+  digest = "1:e035746398055c893b89370aa82b8e7ffb4940b689c6e5626300591e5a33d83d"
+  name = "google.golang.org/appengine"
+  packages = [
+    ".",
+    "datastore",
+    "internal",
+    "internal/app_identity",
+    "internal/base",
+    "internal/datastore",
+    "internal/log",
+    "internal/modules",
+    "internal/remote_api",
+  ]
+  pruneopts = "UT"
+  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
+  version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3f2ffe23e739dd972495d04286452c2dca6a3f97db12e33a8abfc528dd47963a"
+  input-imports = [
+    "github.com/gomodule/redigo/redis",
+    "github.com/vmihailenco/msgpack",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
