@@ -11,6 +11,7 @@ import (
 )
 
 func setup(t *testing.T) (*Queue, func()) {
+	t.Parallel()
 	name := randomName()
 	c, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
@@ -41,20 +42,7 @@ func randomName() string {
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-func TestNewJob(t *testing.T) {
-	t.Parallel()
-	j := &Job{}
-	j.setDefaults()
-	if j.ID == "" {
-		t.Error("job.ID should be generated")
-	}
-	if j.When.IsZero() {
-		t.Error("job.When should be now")
-	}
-}
-
 func TestQueueTasks(t *testing.T) {
-	t.Parallel()
 	q, teardown := setup(t)
 	defer teardown()
 
@@ -101,7 +89,6 @@ func TestQueueTasks(t *testing.T) {
 }
 
 func TestQueueTaskScheduling(t *testing.T) {
-	t.Parallel()
 	q, teardown := setup(t)
 	defer teardown()
 
@@ -145,7 +132,6 @@ func TestQueueTaskScheduling(t *testing.T) {
 }
 
 func TestPopOrder(t *testing.T) {
-	t.Parallel()
 	q, teardown := setup(t)
 	defer teardown()
 
@@ -196,7 +182,6 @@ func TestPopOrder(t *testing.T) {
 }
 
 func TestPopMultiOrder(t *testing.T) {
-	t.Parallel()
 	q, teardown := setup(t)
 	defer teardown()
 
@@ -228,7 +213,6 @@ func TestPopMultiOrder(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	t.Parallel()
 	q, teardown := setup(t)
 	defer teardown()
 
