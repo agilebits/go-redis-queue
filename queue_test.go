@@ -10,14 +10,20 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func initQueue(t *testing.T) *Queue {
+func setup(t *testing.T) (*Queue, func()) {
 	name := randomName()
 	c, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	return New(c, name)
+	q := New(c, name)
+	teardown := func() {
+		q.Conn.Send("DEL", q.Name)
+		q.Conn.Send("DEL", q.Name+":values")
+		q.Conn.Close()
+	}
+	return q, teardown
 }
 
 func addJobs(t *testing.T, q *Queue, jobs []Job) {
@@ -27,16 +33,6 @@ func addJobs(t *testing.T, q *Queue, jobs []Job) {
 			t.FailNow()
 		}
 	}
-}
-
-func clear(q *Queue) {
-	flushQueue(q)
-	q.Conn.Close()
-}
-
-func flushQueue(q *Queue) {
-	q.Conn.Send("DEL", q.Name)
-	q.Conn.Send("DEL", q.Name+":values")
 }
 
 func randomName() string {
@@ -59,8 +55,8 @@ func TestNewJob(t *testing.T) {
 
 func TestQueueTasks(t *testing.T) {
 	t.Parallel()
-	q := initQueue(t)
-	defer clear(q)
+	q, teardown := setup(t)
+	defer teardown()
 
 	_, err := q.Push(&Job{Body: "basic item 1"})
 	if err != nil {
@@ -106,8 +102,8 @@ func TestQueueTasks(t *testing.T) {
 
 func TestQueueTaskScheduling(t *testing.T) {
 	t.Parallel()
-	q := initQueue(t)
-	defer clear(q)
+	q, teardown := setup(t)
+	defer teardown()
 
 	_, err := q.Push(&Job{Body: "scheduled item 1", When: time.Now().Add(90 * time.Millisecond)})
 	if err != nil {
@@ -150,8 +146,8 @@ func TestQueueTaskScheduling(t *testing.T) {
 
 func TestPopOrder(t *testing.T) {
 	t.Parallel()
-	q := initQueue(t)
-	defer clear(q)
+	q, teardown := setup(t)
+	defer teardown()
 
 	addJobs(t, q, []Job{
 		Job{Body: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
@@ -201,8 +197,8 @@ func TestPopOrder(t *testing.T) {
 
 func TestPopMultiOrder(t *testing.T) {
 	t.Parallel()
-	q := initQueue(t)
-	defer clear(q)
+	q, teardown := setup(t)
+	defer teardown()
 
 	addJobs(t, q, []Job{
 		Job{Body: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
@@ -233,8 +229,8 @@ func TestPopMultiOrder(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 	t.Parallel()
-	q := initQueue(t)
-	defer clear(q)
+	q, teardown := setup(t)
+	defer teardown()
 
 	addJobs(t, q, []Job{
 		Job{Body: "oldest", When: time.Now().Add(-300 * time.Millisecond)},

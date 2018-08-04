@@ -8,9 +8,7 @@ local body_queue = id_queue .. ":values"
 local timestamp = ARGV[1]
 local limit = ARGV[2]
 local keys = redis.call("zrangebyscore", id_queue, "-inf", timestamp, "LIMIT", 0, limit)
-if table.getn(keys) == 0 then
-	return {}
-end
+if table.getn(keys) == 0 then return {} end
 local values = redis.call("hmget", body_queue, unpack(keys))
 redis.call("zrem", id_queue, unpack(keys))
 redis.call("hdel", body_queue, unpack(keys))
