@@ -2,7 +2,7 @@ package airq
 
 import "testing"
 
-func TestNewJob(t *testing.T) {
+func TestSetDefaults(t *testing.T) {
 	t.Parallel()
 	j := &Job{}
 	j.setDefaults()
