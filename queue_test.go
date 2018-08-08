@@ -46,13 +46,13 @@ func TestQueueTasks(t *testing.T) {
 	q, teardown := setup(t)
 	defer teardown()
 
-	_, err := q.Push(&Job{Body: "basic item 1"})
+	_, err := q.Push(&Job{Content: "basic item 1"})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	ids, err := q.Push(&Job{Body: "basic item 1"})
+	ids, err := q.Push(&Job{Content: "basic item 1"})
 	if err != nil {
 		t.Error(err, ids)
 		t.FailNow()
@@ -64,7 +64,7 @@ func TestQueueTasks(t *testing.T) {
 	}
 
 	// it adds a `Unique` job
-	_, err = q.Push(&Job{Body: "basic item 1", Unique: true})
+	_, err = q.Push(&Job{Content: "basic item 1", Unique: true})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -76,7 +76,7 @@ func TestQueueTasks(t *testing.T) {
 	}
 
 	// it adds 2 jobs at once
-	_, err = q.Push(&Job{Body: "basic item 2"}, &Job{Body: "basic item 3"})
+	_, err = q.Push(&Job{Content: "basic item 2"}, &Job{Content: "basic item 3"})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -92,7 +92,7 @@ func TestQueueTaskScheduling(t *testing.T) {
 	q, teardown := setup(t)
 	defer teardown()
 
-	_, err := q.Push(&Job{Body: "scheduled item 1", When: time.Now().Add(90 * time.Millisecond)})
+	_, err := q.Push(&Job{Content: "scheduled item 1", When: time.Now().Add(90 * time.Millisecond)})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -136,9 +136,9 @@ func TestPopOrder(t *testing.T) {
 	defer teardown()
 
 	addJobs(t, q, []Job{
-		Job{Body: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
-		Job{Body: "newer", When: time.Now().Add(-100 * time.Millisecond)},
-		Job{Body: "older", When: time.Now().Add(-200 * time.Millisecond)},
+		Job{Content: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
+		Job{Content: "newer", When: time.Now().Add(-100 * time.Millisecond)},
+		Job{Content: "older", When: time.Now().Add(-200 * time.Millisecond)},
 	})
 
 	job, err := q.Pop()
@@ -186,9 +186,9 @@ func TestPopMultiOrder(t *testing.T) {
 	defer teardown()
 
 	addJobs(t, q, []Job{
-		Job{Body: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
-		Job{Body: "newer", When: time.Now().Add(-100 * time.Millisecond)},
-		Job{Body: "older", When: time.Now().Add(-200 * time.Millisecond)},
+		Job{Content: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
+		Job{Content: "newer", When: time.Now().Add(-100 * time.Millisecond)},
+		Job{Content: "older", When: time.Now().Add(-200 * time.Millisecond)},
 	})
 
 	jobs, err := q.PopJobs(3)
@@ -217,9 +217,9 @@ func TestRemove(t *testing.T) {
 	defer teardown()
 
 	addJobs(t, q, []Job{
-		Job{Body: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
-		Job{Body: "newer", When: time.Now().Add(-100 * time.Millisecond)},
-		Job{Body: "older", When: time.Now().Add(-200 * time.Millisecond), ID: "OLDER_ID"},
+		Job{Content: "oldest", When: time.Now().Add(-300 * time.Millisecond)},
+		Job{Content: "newer", When: time.Now().Add(-100 * time.Millisecond)},
+		Job{Content: "older", When: time.Now().Add(-200 * time.Millisecond), ID: "OLDER_ID"},
 	})
 
 	q.Remove("OLDER_ID")

@@ -13,7 +13,7 @@ import (
 
 // Job is the struct of job in queue
 type Job struct {
-	Body         string    `msgpack:"body"`
+	Content      string    `msgpack:"content"`
 	ID           string    `msgpack:"id"`
 	Unique       bool      `msgpack:"-"`
 	When         time.Time `msgpack:"-"`
@@ -27,7 +27,7 @@ func (j *Job) generateID() string {
 		return base64.URLEncoding.EncodeToString(b)
 	}
 	h := sha1.New()
-	io.WriteString(h, j.Body)
+	io.WriteString(h, j.Content)
 	return hex.EncodeToString(h.Sum(nil))
 }
 

@@ -20,7 +20,7 @@ I liked this solution a lot but i missed a few features.
 
 - Insert multiple job at once
 - Remove a job
-- Have multiple times the same job (same body)
+- Have multiple times the same job (same content)
 
 ## Usage
 
@@ -37,14 +37,14 @@ defer c.Close()
 
 q := airq.New(c, "queue_name")
 
-added, taskID, err := q.Push(&airq.Job{Body: "basic item"})
+added, taskID, err := q.Push(&airq.Job{Content: "basic item"})
 if err != nil { ... }
 
 queueSize, err := q.Pending()
 if err != nil { ... }
 
 added, taskID, err := q.Push(&airq.Job{
-  Body: "scheduled item",
+  Content: "scheduled item",
   When: time.Now().Add(10*time.Minute),
 })
 if err != nil { ... }
