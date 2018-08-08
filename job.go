@@ -30,12 +30,11 @@ func compress(in string) string {
 	gz.Write([]byte(in))
 	gz.Flush()
 	gz.Close()
-	return base64.StdEncoding.EncodeToString(b.Bytes())
+	return b.String()
 }
 
 func uncompress(in string) string {
-	data, _ := base64.StdEncoding.DecodeString(in)
-	rdata := bytes.NewReader(data)
+	rdata := bytes.NewReader([]byte(in))
 	r, _ := gzip.NewReader(rdata)
 	s, _ := ioutil.ReadAll(r)
 	return string(s)
@@ -55,9 +54,6 @@ func (j *Job) generateID() string {
 func (j *Job) setDefaults() {
 	if j.CompressedContent == "" {
 		j.CompressedContent = compress(j.Content)
-	}
-	if j.Content == "" {
-		j.Content = uncompress(j.CompressedContent)
 	}
 	if j.ID == "" {
 		j.ID = j.generateID()

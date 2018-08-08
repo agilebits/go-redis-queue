@@ -2,6 +2,16 @@ package airq
 
 import "testing"
 
+func TestCompress(t *testing.T) {
+	t.Parallel()
+	if out := uncompress(compress("")); out != "" {
+		t.Errorf("compression failed %s != \"\"", out)
+	}
+	if out := uncompress(compress("test")); out != "test" {
+		t.Errorf("compression failed %s != \"test\"", out)
+	}
+}
+
 func TestSetDefaults(t *testing.T) {
 	t.Parallel()
 	j := &Job{}
