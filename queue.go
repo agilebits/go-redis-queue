@@ -57,9 +57,17 @@ func (q *Queue) PopJobs(limit int) ([]string, error) {
 	if limit == 0 {
 		return []string{}, fmt.Errorf("limit 0")
 	}
-	return redis.Strings(popJobsScript.Do(
+	redisRes, err := redis.Strings(popJobsScript.Do(
 		q.Conn, q.Name, time.Now().UnixNano(), limit,
 	))
+	if err != nil {
+		return nil, err
+	}
+	var res []string
+	for _, c := range redisRes {
+		res = append(res, uncompress(c))
+	}
+	return res, nil
 }
 
 // Remove removes a job from the queue

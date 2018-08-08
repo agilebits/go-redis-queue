@@ -1,11 +1,14 @@
 package airq
 
 import (
+	"bytes"
+	"compress/gzip"
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/hex"
 	"io"
+	"io/ioutil"
 	"time"
 
 	"github.com/vmihailenco/msgpack"
@@ -13,11 +16,29 @@ import (
 
 // Job is the struct of job in queue
 type Job struct {
-	Content      string    `msgpack:"content"`
-	ID           string    `msgpack:"id"`
-	Unique       bool      `msgpack:"-"`
-	When         time.Time `msgpack:"-"`
-	WhenUnixNano int64     `msgpack:"when"`
+	CompressedContent string    `msgpack:"content"`
+	Content           string    `msgpack:"-"`
+	ID                string    `msgpack:"id"`
+	Unique            bool      `msgpack:"-"`
+	When              time.Time `msgpack:"-"`
+	WhenUnixNano      int64     `msgpack:"when"`
+}
+
+func compress(in string) string {
+	var b bytes.Buffer
+	gz := gzip.NewWriter(&b)
+	gz.Write([]byte(in))
+	gz.Flush()
+	gz.Close()
+	return base64.StdEncoding.EncodeToString(b.Bytes())
+}
+
+func uncompress(in string) string {
+	data, _ := base64.StdEncoding.DecodeString(in)
+	rdata := bytes.NewReader(data)
+	r, _ := gzip.NewReader(rdata)
+	s, _ := ioutil.ReadAll(r)
+	return string(s)
 }
 
 func (j *Job) generateID() string {
@@ -32,6 +53,12 @@ func (j *Job) generateID() string {
 }
 
 func (j *Job) setDefaults() {
+	if j.CompressedContent == "" {
+		j.CompressedContent = compress(j.Content)
+	}
+	if j.Content == "" {
+		j.Content = uncompress(j.CompressedContent)
+	}
 	if j.ID == "" {
 		j.ID = j.generateID()
 	}
