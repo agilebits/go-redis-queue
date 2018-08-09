@@ -40,6 +40,14 @@ func uncompress(in string) string {
 	return string(s)
 }
 
+//
+type JobI interface {
+	GetBody() string
+	GetId() string
+	GetUnique() bool
+	GetWhen() int64
+}
+
 func (j *Job) generateID() string {
 	if j.Unique {
 		b := make([]byte, 40)
@@ -66,4 +74,13 @@ func (j *Job) String() string {
 	j.setDefaults()
 	b, _ := msgpack.Marshal(j)
 	return string(b)
+}
+
+func ToJob(ji JobI) *Job {
+	return &Job{
+		Body:   ji.GetBody(),
+		ID:     ji.GetId(),
+		Unique: ji.GetUnique(),
+		When:   time.Unix(0, ji.GetWhen()),
+	}
 }

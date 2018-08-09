@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+message Id {
+  string id = 1;
+}
+
+message IdList {
+  repeated Id ids = 1;
+}
+
+message Job {
+  string id = 1;
+  string body = 2;
+  bool unique = 3;
+  int32 when = 4;
+}
+
+message JobList {
+  repeated Job jobs = 1;
+}
+
+message Void {}
+
+service Jobs {
+  rpc Push(JobList) returns(IdList);
+  rpc Remove(IdList) returns(Void);
+}
