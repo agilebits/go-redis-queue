@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AgileBits/go-redis-queue/redisqueue"
-	"github.com/garyburd/redigo/redis"
+	"github.com/agilebits/go-redis-queue/redisqueue"
+	"github.com/gomodule/redigo/redis"
 )
 
 func TestQueueTasks(t *testing.T) {

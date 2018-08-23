@@ -1,6 +1,6 @@
 package redisqueue
 
-import "github.com/garyburd/redigo/redis"
+import "github.com/gomodule/redigo/redis"
 
 var popJobsScript *redis.Script
 
