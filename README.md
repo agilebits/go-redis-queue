@@ -1,4 +1,4 @@
-# Air Q (*r*edis *q*ueue)
+# Air Q (*r*edis *q*ueue) <a href="https://travis-ci.com/missena-corp/airq"><img src="https://travis-ci.com/missena-corp/airq.svg?branch=master" alt="Build Status"></a>
 
 ## What and why
 
